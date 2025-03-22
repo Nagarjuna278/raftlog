@@ -1,0 +1,26 @@
+bin/
+*.exe
+*.dll
+
+# Go modules
+vendor/
+
+# IDE specific files
+.idea/
+.vscode/
+
+# Operating system specific files
+.DS_Store
+Thumbs.db
+
+# Test coverage files
+*.out
+cover.out
+cover.html
+
+# Other temporary files
+*.log
+*.tmp
+
+# If you are using delve for debugging
+.delve/
