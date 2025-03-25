@@ -10,6 +10,7 @@ import (
 // main function is the entry point of the Raft cluster simulation.
 func main() {
 	// Seed the random number generator for randomness in elections and other operations.
+	// ToDo: Seed is depreciated
 	rand.Seed(time.Now().UnixNano())
 
 	// Define the IDs of the nodes in the Raft cluster (a 5-node cluster in this case).
