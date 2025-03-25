@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// main function is the entry point of the Raft cluster simulation.
+// The main function is the entry point of the Raft cluster simulation.
 func main() {
 	// Seed the random number generator for randomness in elections and other operations.
 	// ToDo: Seed is depreciated
