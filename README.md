@@ -1,17 +1,29 @@
 # RaftLog: A Raft Consensus Algorithm Simulation
 
-This project is a Go-based simulation of the Raft consensus algorithm. It demonstrates the core concepts of Raft, including leader election and log replication, within a simplified environment.
+This project is a Go-based simulation of the Raft consensus algorithm. It demonstrates the core concepts of Raft, 
+including leader election and log replication, within a simplified environment.
 
 ## Overview
 
-This simulation creates a cluster of Raft nodes that communicate with each other to elect a leader and maintain a consistent log. The `cmd/main.go` file sets up the simulation, creates the nodes, starts them, and then simulates a client appending a log entry to the leader.
+This system creates a cluster of nodes that communicate to maintain a consistent log. One node acts as the leader, 
+appending log entries and replicating them to followers. If the leader fails (e.g., due to a network change or crash), 
+the remaining nodes elect a new leader to continue replication. The `cmd/server/main.go` file sets up the cluster, 
+starts the nodes, and runs the replication process.
 
 ## Components
-
-*   **`internal/node`:** Contains the core Raft node implementation.
-    *   `node.go`: Defines the `Node` struct and its methods for handling different Raft states (Follower, Candidate, Leader).
-    *   `types.go`: Defines the data structures used for communication between nodes (e.g., `LogEntry`, `RequestVoteArgs`, `AppendEntriesArgs`).
-*   **`cmd/main.go`:** The main entry point of the simulation.  It sets up the cluster, starts the nodes, and simulates a client appending a log entry.
+            
+*   **`internal/node`:** Contains the core node implementation.
+    *   `node.go`: Defines the `Node` struct and its methods for handling leader and follower roles, including the main loop for replication and failure detection.
+    *   `election.go`: Implements basic leader election logic, triggered when the current leader is lost.
+    *   `rpc.go`: Placeholder for RPC handlers (to be implemented for real network communication).
+*   **`internal/log`:** Manages the log structure and replication.
+    *   `log.go`: Defines the `Log` struct and methods for appending and reading log entries.
+    *   `sync.go`: Handles log replication from the leader to followers.
+*   **`internal/network`:** Placeholder for network communication logic.
+    *   `network.go`: To be implemented for real node-to-node communication (e.g., heartbeats, log replication).
+*   **`internal/config`:** Configuration management.
+    *   `config.go`: Defines the `Config` struct for node IDs and peer addresses.
+*   **`cmd/server/main.go`:** The main entry point. Sets up the cluster and starts the nodes.
 
 ## Usage
 
@@ -47,6 +59,7 @@ This simulation creates a cluster of Raft nodes that communicate with each other
 ## Future Enhancements
 
 *   Implement the full Raft algorithm, including handling of network partitions and node failures.
+*   Implement real network communication in network.go and rpc.go (e.g., using gRPC for heartbeats and log replication).
 *   Add a user interface for visualizing the cluster and its log.
 *   Implement a persistent log storage mechanism.
 *   Add more sophisticated client interactions and error handling.
