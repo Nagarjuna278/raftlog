@@ -11,24 +11,24 @@ func (n *Node) runFollower() {
 	timer := time.NewTimer(timeout)
 	select {
 	case <-timer.C:
-		n.mu.Lock()
+		n.Mu.Lock()
 		n.state = "Candidate"
 		n.currentTerm++
 		n.votedFor = n.id
-		n.mu.Unlock()
+		n.Mu.Unlock()
 	case <-time.After(50 * time.Millisecond): // Simulate heartbeat
 	}
 }
 
 func (n *Node) runCandidate() {
-	n.mu.Lock()
+	n.Mu.Lock()
 	term := n.currentTerm
 	lastLogIndex := len(n.log) - 1
 	lastLogTerm := 0
 	if lastLogIndex >= 0 {
 		lastLogTerm = n.log[lastLogIndex].Term
 	}
-	n.mu.Unlock()
+	n.Mu.Unlock()
 
 	votes := 1
 	voteChan := make(chan bool, len(n.peers))
@@ -54,7 +54,7 @@ func (n *Node) runCandidate() {
 		}
 	}
 
-	n.mu.Lock()
+	n.Mu.Lock()
 	if votes > len(n.peers)/2 && n.state == "Candidate" && n.currentTerm == term {
 		n.state = "Leader"
 		for _, peer := range n.peers {
@@ -62,12 +62,12 @@ func (n *Node) runCandidate() {
 			n.matchIndex[peer] = 0
 		}
 	}
-	n.mu.Unlock()
+	n.Mu.Unlock()
 }
 
 func (n *Node) requestVote(peer int, args RequestVoteArgs) RequestVoteReply {
-	n.mu.Lock()
-	defer n.mu.Unlock()
+	n.Mu.Lock()
+	defer n.Mu.Unlock()
 	reply := RequestVoteReply{Term: n.currentTerm}
 	if args.Term < n.currentTerm {
 		log.Printf("Node %d received RequestVote from %d in term %d, denied vote (current term is higher), response: {Term: %d, VoteGranted: %t}", n.id, args.CandidateID, args.Term, reply.Term, reply.VoteGranted)

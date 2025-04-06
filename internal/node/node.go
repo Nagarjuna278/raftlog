@@ -6,7 +6,7 @@ import (
 
 // Node represents a Raft server
 type Node struct {
-	mu          sync.Mutex
+	Mu          sync.Mutex
 	id          int
 	state       string
 	currentTerm int
@@ -39,15 +39,15 @@ func (n *Node) Start() {
 }
 
 func (n *Node) State() string {
-	n.mu.Lock()
-	defer n.mu.Unlock()
+	n.Mu.Lock()
+	defer n.Mu.Unlock()
 	return n.state
 }
 
 func (n *Node) Append(command string) {
-	n.mu.Lock()
+	n.Mu.Lock()
 	if n.state != "Leader" {
-		n.mu.Unlock()
+		n.Mu.Unlock()
 		return
 	}
 	entry := LogEntry{
@@ -56,14 +56,14 @@ func (n *Node) Append(command string) {
 		Command: command,
 	}
 	n.log = append(n.log, entry)
-	n.mu.Unlock()
+	n.Mu.Unlock()
 }
 
 func (n *Node) run() {
 	for {
-		n.mu.Lock()
+		n.Mu.Lock()
 		state := n.state
-		n.mu.Unlock()
+		n.Mu.Unlock()
 
 		switch state {
 		case "Follower":

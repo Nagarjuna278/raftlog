@@ -6,11 +6,11 @@ import (
 )
 
 func (n *Node) runLeader() {
-	n.mu.Lock()
+	n.Mu.Lock()
 	term := n.currentTerm
 	logEntries := n.log
 	commitIndex := n.commitIndex
-	n.mu.Unlock()
+	n.Mu.Unlock()
 
 	applyChan := make(chan LogEntry, 10)
 	go func() {
@@ -24,7 +24,7 @@ func (n *Node) runLeader() {
 			continue
 		}
 		go func(p int) {
-			n.mu.Lock()
+			n.Mu.Lock()
 			prevLogIndex := n.nextIndex[p] - 1
 			prevLogTerm := 0
 			if prevLogIndex >= 0 {
@@ -39,10 +39,10 @@ func (n *Node) runLeader() {
 				Entries:      entries,
 				LeaderCommit: commitIndex,
 			}
-			n.mu.Unlock()
+			n.Mu.Unlock()
 
 			reply := n.appendEntries(p, args)
-			n.mu.Lock()
+			n.Mu.Lock()
 			if reply.Success {
 				n.matchIndex[p] = prevLogIndex + len(entries)
 				n.nextIndex[p] = n.matchIndex[p] + 1
@@ -69,15 +69,15 @@ func (n *Node) runLeader() {
 				applyChan <- n.log[i]
 				n.lastApplied = i
 			}
-			n.mu.Unlock()
+			n.Mu.Unlock()
 		}(peer)
 	}
 	time.Sleep(50 * time.Millisecond)
 }
 
 func (n *Node) appendEntries(peer int, args AppendEntriesArgs) AppendEntriesReply {
-	n.mu.Lock()
-	defer n.mu.Unlock()
+	n.Mu.Lock()
+	defer n.Mu.Unlock()
 	reply := AppendEntriesReply{Term: n.currentTerm}
 	if args.Term < n.currentTerm {
 		return reply
